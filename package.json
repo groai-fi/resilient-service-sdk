@@ -1,5 +1,5 @@
 {
-    "name": "@groai-fi/resilient-service-sdk",
+    "name": "@groai/resilient-service-sdk",
     "version": "1.0.0",
     "description": "A resilience-first SDK for backend services including circuit breakers, HTTP clients, and caching.",
     "main": "dist/index.js",
@@ -41,12 +41,12 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/groai-fi/resilient-service-sdk.git"
+        "url": "git+https://github.com/groai/resilient-service-sdk.git"
     },
     "bugs": {
-        "url": "https://github.com/groai-fi/resilient-service-sdk/issues"
+        "url": "https://github.com/groai/resilient-service-sdk/issues"
     },
-    "homepage": "https://github.com/groai-fi/resilient-service-sdk#readme",
+    "homepage": "https://github.com/groai/resilient-service-sdk#readme",
     "dependencies": {
         "axios": "^1.6.0",
         "axios-retry": "^3.8.0",

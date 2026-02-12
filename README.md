@@ -12,14 +12,14 @@ A generic, resilience-first SDK for building reliable backend services.
 ## Installation
 
 ```bash
-npm install @groai-fi/resilient-service-sdk
+npm install @groai/resilient-service-sdk
 ```
 
 ## Usage
 
 ### 1. HTTP Client
 ```typescript
-import { ResilientHttpClient } from '@groai-fi/resilient-service-sdk';
+import { ResilientHttpClient } from '@groai/resilient-service-sdk';
 
 interface PriceData {
     bitcoin: { usd: number };
@@ -35,7 +35,7 @@ console.log(response.data.bitcoin.usd);
 
 ### 2. Caching
 ```typescript
-import { CacheService } from '@groai-fi/resilient-service-sdk';
+import { CacheService } from '@groai/resilient-service-sdk';
 
 interface UserSession {
     id: string;
@@ -50,7 +50,7 @@ const session = await cache.get<UserSession>('session_123');
 
 ### 3. Health Checks
 ```typescript
-import { HealthCheckService } from '@groai-fi/resilient-service-sdk';
+import { HealthCheckService } from '@groai/resilient-service-sdk';
 
 const health = new HealthCheckService({
   httpEndpoints: { google: 'https://google.com' },
