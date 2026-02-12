@@ -17,6 +17,8 @@ describe('HealthCheckService', () => {
 
     it('should fail if a required env var is missing', async () => {
         delete process.env.API_KEY;
-        await expect(service.runAllChecks()).rejects.toThrow('Health check failed: Missing required environment variables: API_KEY');
+        await expect(service.runAllChecks()).rejects.toThrow(
+            'Health check failed: Missing required environment variables: API_KEY'
+        );
     });
 });

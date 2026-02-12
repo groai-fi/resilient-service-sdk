@@ -13,7 +13,7 @@ describe('ResilientHttpClient', () => {
         client = new ResilientHttpClient({
             retries: 2,
             timeout: 1000,
-            resetTimeout: 200 // Fast reset for testing
+            resetTimeout: 200, // Fast reset for testing
         });
     });
 

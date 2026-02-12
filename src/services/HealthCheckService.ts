@@ -24,7 +24,7 @@ export class HealthCheckService {
     private async checkEnvVars(): Promise<void> {
         if (!this.config.requiredEnvVars) return;
 
-        const missing = this.config.requiredEnvVars.filter(key => !process.env[key]);
+        const missing = this.config.requiredEnvVars.filter((key) => !process.env[key]);
         if (missing.length > 0) {
             throw new Error(`Health check failed: Missing required environment variables: ${missing.join(', ')}`);
         }
@@ -32,7 +32,7 @@ export class HealthCheckService {
 
     /**
      * Replaces the Ethereum-specific check with a generic HTTP check.
-     * This allows checking RPC nodes via detailed HTTP calls if needed, 
+     * This allows checking RPC nodes via detailed HTTP calls if needed,
      * but decouples the library from ethers.js.
      */
     private async checkHttpEndpoints(): Promise<void> {

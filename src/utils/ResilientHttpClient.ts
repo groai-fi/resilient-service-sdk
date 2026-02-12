@@ -30,14 +30,14 @@ export class ResilientHttpClient {
             timeout: 5000,
             errorThresholdPercentage: 50,
             resetTimeout: 30000,
-            ...config
+            ...config,
         };
 
         // Create axios instance
         this.axiosClient = axios.create({
             baseURL: this.config.baseURL,
             headers: this.config.defaultHeaders,
-            timeout: this.config.timeout
+            timeout: this.config.timeout,
         });
 
         // Configure retry logic
@@ -45,10 +45,12 @@ export class ResilientHttpClient {
             retries: this.config.retries,
             retryDelay: this.config.retryDelay || axiosRetry.exponentialDelay,
             retryCondition: (error: AxiosError) => {
-                return axiosRetry.isNetworkOrIdempotentRequestError(error) ||
+                return (
+                    axiosRetry.isNetworkOrIdempotentRequestError(error) ||
                     (error.response?.status !== undefined &&
-                        this.config.retryStatusCodes!.includes(error.response.status));
-            }
+                        this.config.retryStatusCodes!.includes(error.response.status))
+                );
+            },
         });
     }
 
@@ -64,7 +66,7 @@ export class ResilientHttpClient {
                     resetTimeout: this.config.resetTimeout,
                     errorFilter: (error: any) => {
                         return !(error.response?.status === 429);
-                    }
+                    },
                 }
             );
             this.breakers.set(key, breaker);
@@ -83,7 +85,7 @@ export class ResilientHttpClient {
         return breaker.fire(url, {
             ...config,
             method: 'POST',
-            data
+            data,
         });
     }
 
@@ -92,7 +94,7 @@ export class ResilientHttpClient {
         return breaker.fire(url, {
             ...config,
             method: 'PUT',
-            data
+            data,
         });
     }
 
@@ -110,12 +112,14 @@ export class ResilientHttpClient {
     // Get circuit breaker status
     getCircuitStatus(key: string = 'default') {
         const breaker = this.breakers.get(key);
-        return breaker ? {
-            isOpen: breaker.opened,
-            isHalfOpen: breaker.halfOpen,
-            isClosed: breaker.closed,
-            stats: breaker.stats
-        } : null;
+        return breaker
+            ? {
+                  isOpen: breaker.opened,
+                  isHalfOpen: breaker.halfOpen,
+                  isClosed: breaker.closed,
+                  stats: breaker.stats,
+              }
+            : null;
     }
 
     // Manually reset circuit breaker

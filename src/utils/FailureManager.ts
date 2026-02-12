@@ -14,7 +14,9 @@ export class FailureManager {
      */
     handleSuccess() {
         if (this.consecutiveFailures > 0) {
-            console.log(`✅ Success observed. Resetting consecutive failure count from ${this.consecutiveFailures} to 0.`);
+            console.log(
+                `✅ Success observed. Resetting consecutive failure count from ${this.consecutiveFailures} to 0.`
+            );
             this.consecutiveFailures = 0;
         }
     }

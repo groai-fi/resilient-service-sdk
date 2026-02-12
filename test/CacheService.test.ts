@@ -1,5 +1,4 @@
 import { CacheService } from '../src/services/CacheService';
-import NodeCache from 'node-cache';
 import { createClient } from 'redis';
 
 // Mock Redis and NodeCache

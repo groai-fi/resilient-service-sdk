@@ -9,7 +9,7 @@ export interface CacheConfig {
         timeout?: number;
         errorThresholdPercentage?: number;
         resetTimeout?: number;
-    }
+    };
 }
 
 export class CacheService {
@@ -23,15 +23,15 @@ export class CacheService {
             this.client = createClient({
                 url: config.redisUrl,
                 socket: {
-                    connectTimeout: 5000
-                }
+                    connectTimeout: 5000,
+                },
             });
 
             // Initialize Circuit Breaker for Redis operations
             const circuitBreakerOptions = {
                 timeout: config.circuitBreaker?.timeout || 3000,
                 errorThresholdPercentage: config.circuitBreaker?.errorThresholdPercentage || 50,
-                resetTimeout: config.circuitBreaker?.resetTimeout || 10000
+                resetTimeout: config.circuitBreaker?.resetTimeout || 10000,
             };
 
             this.circuitBreaker = new CircuitBreaker(async (operation: () => Promise<any>) => {
@@ -46,7 +46,7 @@ export class CacheService {
             (this.client as RedisClientType).on('error', (err: any) => console.error('Redis Client Error', err));
 
             // Handle connection asynchronously but don't block constructor
-            (this.client as RedisClientType).connect().catch(err => {
+            (this.client as RedisClientType).connect().catch((err) => {
                 console.error('Failed to connect to Redis on startup:', err);
                 // We don't disable isRedisEnabled here because we want the circuit breaker to handle retries/failures
             });
