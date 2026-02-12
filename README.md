@@ -21,17 +21,31 @@ npm install @groai-fi/resilient-service-sdk
 ```typescript
 import { ResilientHttpClient } from '@groai-fi/resilient-service-sdk';
 
+interface PriceData {
+    bitcoin: { usd: number };
+}
+
 const client = new ResilientHttpClient({ retries: 3 });
+
 // Circuit key 'coingecko' isolates failures
-const data = await client.get('https://api.coingecko.com/...', {}, 'coingecko');
+// Generic type <PriceData> ensures response.data is correctly typed
+const response = await client.get<PriceData>('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd', {}, 'coingecko');
+console.log(response.data.bitcoin.usd);
 ```
 
 ### 2. Caching
 ```typescript
 import { CacheService } from '@groai-fi/resilient-service-sdk';
 
+interface UserSession {
+    id: string;
+    exp: number;
+}
+
 const cache = new CacheService({ redisUrl: process.env.REDIS_URL });
-await cache.set('key', { foo: 'bar' }, 60);
+
+await cache.set('session_123', { id: 'abc', exp: 123456 }, 3600);
+const session = await cache.get<UserSession>('session_123');
 ```
 
 ### 3. Health Checks
@@ -39,12 +53,12 @@ await cache.set('key', { foo: 'bar' }, 60);
 import { HealthCheckService } from '@groai-fi/resilient-service-sdk';
 
 const health = new HealthCheckService({
-  httpEndpoints: { google: 'https://google.com' }, // Example check
+  httpEndpoints: { google: 'https://google.com' },
   requiredEnvVars: ['API_KEY']
 });
 
 // Run health checks before starting server
-await health.RunAllChecks();
+await health.runAllChecks();
 ```
 
 ## License
