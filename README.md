@@ -47,3 +47,7 @@ const health = new HealthCheckService({
 await health.RunAllChecks();
 ```
 
+## License
+
+Apache-2.0
+

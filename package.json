@@ -17,7 +17,7 @@
         "http"
     ],
     "author": "Hamilton Wang",
-    "license": "MIT",
+    "license": "Apache-2.0",
     "dependencies": {
         "axios": "^1.6.0",
         "axios-retry": "^3.8.0",
