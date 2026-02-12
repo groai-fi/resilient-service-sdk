@@ -1,5 +1,5 @@
 {
-    "name": "@aihedge/resilient-service-sdk",
+    "name": "@groai-fi/resilient-service-sdk",
     "version": "1.0.0",
     "description": "A resilience-first SDK for backend services including circuit breakers, HTTP clients, and caching.",
     "main": "dist/index.js",

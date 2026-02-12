@@ -1,4 +1,4 @@
-# Resilient Service SDK
+# Resilient Service SDK v1
 
 A generic, resilience-first SDK for building reliable backend services.
 
@@ -12,14 +12,14 @@ A generic, resilience-first SDK for building reliable backend services.
 ## Installation
 
 ```bash
-npm install @aihedge/resilient-service-sdk
+npm install @groai-fi/resilient-service-sdk
 ```
 
 ## Usage
 
 ### 1. HTTP Client
 ```typescript
-import { ResilientHttpClient } from '@aihedge/resilient-service-sdk';
+import { ResilientHttpClient } from '@groai-fi/resilient-service-sdk';
 
 const client = new ResilientHttpClient({ retries: 3 });
 // Circuit key 'coingecko' isolates failures
@@ -28,7 +28,7 @@ const data = await client.get('https://api.coingecko.com/...', {}, 'coingecko');
 
 ### 2. Caching
 ```typescript
-import { CacheService } from '@aihedge/resilient-service-sdk';
+import { CacheService } from '@groai-fi/resilient-service-sdk';
 
 const cache = new CacheService({ redisUrl: process.env.REDIS_URL });
 await cache.set('key', { foo: 'bar' }, 60);
@@ -36,7 +36,7 @@ await cache.set('key', { foo: 'bar' }, 60);
 
 ### 3. Health Checks
 ```typescript
-import { HealthCheckService } from '@aihedge/resilient-service-sdk';
+import { HealthCheckService } from '@groai-fi/resilient-service-sdk';
 
 const health = new HealthCheckService({
   httpEndpoints: { google: 'https://google.com' }, // Example check
