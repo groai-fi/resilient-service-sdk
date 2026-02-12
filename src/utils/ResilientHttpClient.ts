@@ -1,4 +1,4 @@
-import axios, { AxiosInstance, AxiosRequestConfig, AxiosError } from 'axios';
+import axios, { AxiosInstance, AxiosRequestConfig, AxiosError, AxiosResponse } from 'axios';
 import axiosRetry from 'axios-retry';
 import CircuitBreaker from 'opossum';
 
@@ -20,7 +20,7 @@ export interface ResilientClientConfig {
 
 export class ResilientHttpClient {
     private axiosClient: AxiosInstance;
-    private breakers: Map<string, CircuitBreaker<[url: string, config?: AxiosRequestConfig], any>> = new Map();
+    private breakers: Map<string, CircuitBreaker<[url: string, config?: AxiosRequestConfig], unknown>> = new Map();
     private config: ResilientClientConfig;
 
     constructor(config: ResilientClientConfig = {}) {
@@ -54,7 +54,7 @@ export class ResilientHttpClient {
         });
     }
 
-    private getBreaker(key: string = 'default'): CircuitBreaker<[url: string, config?: AxiosRequestConfig], any> {
+    private getBreaker(key: string = 'default'): CircuitBreaker<[url: string, config?: AxiosRequestConfig], unknown> {
         if (!this.breakers.has(key)) {
             const breaker = new CircuitBreaker(
                 async (url: string, config?: AxiosRequestConfig) => {
@@ -64,8 +64,9 @@ export class ResilientHttpClient {
                     timeout: this.config.timeout! * 2,
                     errorThresholdPercentage: this.config.errorThresholdPercentage,
                     resetTimeout: this.config.resetTimeout,
-                    errorFilter: (error: any) => {
-                        return !(error.response?.status === 429);
+                    errorFilter: (error: unknown) => {
+                        const axiosError = error as AxiosError;
+                        return !(axiosError.response?.status === 429);
                     },
                 }
             );
@@ -75,38 +76,56 @@ export class ResilientHttpClient {
     }
 
     // Convenience methods
-    async get(url: string, config?: AxiosRequestConfig, circuitKey?: string) {
+    async get<T = unknown>(url: string, config?: AxiosRequestConfig, circuitKey?: string): Promise<AxiosResponse<T>> {
         const breaker = this.getBreaker(circuitKey);
-        return breaker.fire(url, { ...config, method: 'GET' });
+        return (await breaker.fire(url, { ...config, method: 'GET' })) as AxiosResponse<T>;
     }
 
-    async post(url: string, data?: any, config?: AxiosRequestConfig, circuitKey?: string) {
+    async post<T = unknown>(
+        url: string,
+        data?: unknown,
+        config?: AxiosRequestConfig,
+        circuitKey?: string
+    ): Promise<AxiosResponse<T>> {
         const breaker = this.getBreaker(circuitKey);
-        return breaker.fire(url, {
+        return (await breaker.fire(url, {
             ...config,
             method: 'POST',
             data,
-        });
+        })) as AxiosResponse<T>;
     }
 
-    async put(url: string, data?: any, config?: AxiosRequestConfig, circuitKey?: string) {
+    async put<T = unknown>(
+        url: string,
+        data?: unknown,
+        config?: AxiosRequestConfig,
+        circuitKey?: string
+    ): Promise<AxiosResponse<T>> {
         const breaker = this.getBreaker(circuitKey);
-        return breaker.fire(url, {
+        return (await breaker.fire(url, {
             ...config,
             method: 'PUT',
             data,
-        });
+        })) as AxiosResponse<T>;
     }
 
-    async delete(url: string, config?: AxiosRequestConfig, circuitKey?: string) {
+    async delete<T = unknown>(
+        url: string,
+        config?: AxiosRequestConfig,
+        circuitKey?: string
+    ): Promise<AxiosResponse<T>> {
         const breaker = this.getBreaker(circuitKey);
-        return breaker.fire(url, { ...config, method: 'DELETE' });
+        return (await breaker.fire(url, { ...config, method: 'DELETE' })) as AxiosResponse<T>;
     }
 
     // Generic request method
-    async request(url: string, config?: AxiosRequestConfig, circuitKey?: string) {
+    async request<T = unknown>(
+        url: string,
+        config?: AxiosRequestConfig,
+        circuitKey?: string
+    ): Promise<AxiosResponse<T>> {
         const breaker = this.getBreaker(circuitKey);
-        return breaker.fire(url, config);
+        return (await breaker.fire(url, config)) as AxiosResponse<T>;
     }
 
     // Get circuit breaker status

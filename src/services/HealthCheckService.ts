@@ -54,8 +54,9 @@ export class HealthCheckService {
                 } else {
                     console.warn(`⚠️ ${name} returned status ${response.status}.`);
                 }
-            } catch (error: any) {
-                console.error(`${name} connection error:`, error.message);
+            } catch (error: unknown) {
+                const errorMessage = error instanceof Error ? error.message : String(error);
+                console.error(`${name} connection error:`, errorMessage);
                 throw new Error(`Health check failed: Could not connect to ${name} at ${url}.`);
             }
         }
@@ -74,8 +75,9 @@ export class HealthCheckService {
             await client.ping();
             await client.quit();
             console.log('✅ Redis connection successful.');
-        } catch (error: any) {
-            console.error('Redis connection error:', error.message);
+        } catch (error: unknown) {
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            console.error('Redis connection error:', errorMessage);
             throw new Error(`Health check failed: Could not connect to Redis at ${redisUrl}.`);
         }
     }

@@ -15,7 +15,7 @@ export interface CacheConfig {
 export class CacheService {
     private client: RedisClientType | NodeCache;
     private isRedisEnabled: boolean;
-    private circuitBreaker: CircuitBreaker;
+    private circuitBreaker: CircuitBreaker<[operation: () => Promise<unknown>], unknown>;
 
     constructor(config: CacheConfig = {}) {
         if (config.redisUrl) {
@@ -34,7 +34,7 @@ export class CacheService {
                 resetTimeout: config.circuitBreaker?.resetTimeout || 10000,
             };
 
-            this.circuitBreaker = new CircuitBreaker(async (operation: () => Promise<any>) => {
+            this.circuitBreaker = new CircuitBreaker(async (operation: () => Promise<unknown>) => {
                 return await operation();
             }, circuitBreakerOptions);
 
@@ -43,7 +43,7 @@ export class CacheService {
                 return null;
             });
 
-            (this.client as RedisClientType).on('error', (err: any) => console.error('Redis Client Error', err));
+            (this.client as RedisClientType).on('error', (err: unknown) => console.error('Redis Client Error', err));
 
             // Handle connection asynchronously but don't block constructor
             (this.client as RedisClientType).connect().catch((err) => {
@@ -57,7 +57,7 @@ export class CacheService {
             this.client = new NodeCache({ stdTTL: config.defaultTTL || 300 });
             this.isRedisEnabled = false;
             // Mock circuit breaker for symmetry
-            this.circuitBreaker = new CircuitBreaker(async (op: any) => op(), {});
+            this.circuitBreaker = new CircuitBreaker(async <T>(op: () => Promise<T>) => op(), {});
         }
     }
 
@@ -69,8 +69,9 @@ export class CacheService {
                     return data;
                 });
                 return result ? JSON.parse(result as string) : null;
-            } catch (error) {
-                console.error(`Error getting key ${key} from Redis (Circuit Breaker):`, error);
+            } catch (error: unknown) {
+                const errorMessage = error instanceof Error ? error.message : String(error);
+                console.error(`Error getting key ${key} from Redis (Circuit Breaker):`, errorMessage);
                 // Potential Enhancement: Fallback to local memory cache if Redis fails?
                 // For now, returning null is standard.
                 return null;
@@ -89,8 +90,9 @@ export class CacheService {
                         EX: ttlSeconds || 300,
                     });
                 });
-            } catch (error) {
-                console.error(`Error setting key ${key} to Redis (Circuit Breaker):`, error);
+            } catch (error: unknown) {
+                const errorMessage = error instanceof Error ? error.message : String(error);
+                console.error(`Error setting key ${key} to Redis (Circuit Breaker):`, errorMessage);
             }
         } else {
             (this.client as NodeCache).set(key, value, ttlSeconds || 300);
